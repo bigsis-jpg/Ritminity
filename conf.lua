@@ -61,4 +61,15 @@ config.debug = {
     logLevel = "info" -- trace, debug, info, warn, error
 }
 
+function love.conf(t)
+    t.identity = config.name
+    t.version = "11.4"
+    t.window.width = config.screen.width
+    t.window.height = config.screen.height
+    t.window.fullscreen = config.screen.fullscreen
+    t.window.vsync = config.screen.vsync and 1 or 0
+    t.window.msaa = config.screen.msaa
+    t.window.title = config.name
+end
+
 return config

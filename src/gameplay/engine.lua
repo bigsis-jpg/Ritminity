@@ -189,8 +189,8 @@ function GameplayEngine:update(dt, audioTime)
     -- Procesar notas
     self:processNotes()
     
-    -- Verificar fin del chart
-    if self.state.currentTime > self:getChartEndTime() and #self.notes > 0 then
+    -- Verificar fin del chart o si no hay notas
+    if self.state.currentTime > self:getChartEndTime() then
         self:finish()
     end
 end

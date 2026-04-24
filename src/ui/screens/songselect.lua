@@ -91,7 +91,7 @@ function SongSelect:scanSongs()
                     idCounter = idCounter + 1
             end
         end
-        
+        end -- Cerrar if info.type == "directory"
         -- Check for individual files (not in directories)
         if info and info.type == "file" then
             if item:match("%.mp3$") or item:match("%.ogg$") then
@@ -210,7 +210,7 @@ function SongSelect:draw()
         -- Info (BPM, Difficulty, Length)
         love.graphics.setFont(love.graphics.newFont(14))
         love.graphics.setColor(0.5, 0.5, 0.5, 1)
-        local info = string.format("BPM: %d  |  %s  |  %d:%02d", song.bpm, song.difficulty, math.floor(song.length / 60), song.length % 60)
+        local info = string.format("BPM: %s  |  %s  |  %d:%02d", tostring(song.bpm), song.difficulty, math.floor(song.length / 60), song.length % 60)
         love.graphics.print(info, 850, y + 25)
     end
     

@@ -206,11 +206,7 @@ function AudioManager:updateVolumes()
     end
 end
 
--- Actualizar
-function AudioManager:update(dt)
-    -- Sincronizar tiempos
-    self:sync()
-end
+
 
 -- Obtener estado de la música
 function AudioManager:isMusicPlaying()

@@ -445,14 +445,20 @@ function Gameplay:onGameEnd()
 end
 
 function Gameplay:handleInput(key)
-    -- Mapear teclas a columnas
+    -- Mapear teclas a columnas (Solo Press)
     for i, keyName in ipairs(self.columnKeys) do
         if key == keyName then
-            if InputManager:isPressed(key) then
-                self.engine:keyPressed(i)
-            elseif InputManager:isReleased(key) then
-                self.engine:keyReleased(i)
-            end
+            self.engine:keyPressed(i)
+            return
+        end
+    end
+end
+
+function Gameplay:keyreleased(key, scancode)
+    -- Mapear teclas a columnas (Solo Release)
+    for i, keyName in ipairs(self.columnKeys) do
+        if key == keyName then
+            self.engine:keyReleased(i)
             return
         end
     end

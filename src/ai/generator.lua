@@ -54,9 +54,9 @@ end
 -- Generar chart desde archivo de audio real
 function AIChartGenerator:generateFromAudio(audioPath)
     -- Cargar datos PCM crudos para analizar picos
-    local soundData = love.sound.newSoundData(audioPath)
-    if not soundData then
-        return nil, "No se pudo leer el archivo de audio."
+    local success, soundData = pcall(love.sound.newSoundData, audioPath)
+    if not success or not soundData then
+        return nil, "No se pudo leer el archivo de audio: " .. tostring(soundData)
     end
     
     -- El nombre de la canción puede ser el nombre del archivo
@@ -69,7 +69,7 @@ function AIChartGenerator:generateFromAudio(audioPath)
             bpm = 120,
             offset = 0,
             difficulty = self.config.difficulty,
-            audioFile = audioPath:match("([^/\\]+)$") or audioPath -- Solo el nombre del archivo
+            audioFile = audioPath
         },
         notes = {}
     }

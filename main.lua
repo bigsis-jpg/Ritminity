@@ -94,8 +94,7 @@ function love.update(dt)
     -- Limitar delta time para evitar saltos
     dt = math.min(dt, config.performance.maxDeltaTime)
     
-    -- Actualizar managers
-    InputManager:update(dt)
+    -- Actualizar managers (excepto Input, que debe ser al final)
     AudioManager:update(dt)
     NetworkManager:update(dt)
     ResourceManager:update(dt)
@@ -107,6 +106,9 @@ function love.update(dt)
     
     -- Procesar eventos
     EventSystem:update(dt)
+    
+    -- Limpiar frame actual de inputs al final
+    InputManager:update(dt)
 end
 
 -- Loop principal de renderizado
@@ -152,6 +154,10 @@ end
 
 function love.keyreleased(key, scancode)
     InputManager:handleKeyReleased(key, scancode)
+    
+    if StateManager.current and StateManager.current.keyreleased then
+        StateManager.current:keyreleased(key, scancode)
+    end
 end
 
 -- Manejo de eventos de mouse
