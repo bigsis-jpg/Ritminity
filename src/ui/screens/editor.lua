@@ -350,7 +350,7 @@ function Editor:loadChart(path)
     file:close()
     
     -- Parsear el chart
-    local ChartParser = require("src.chart.parser")
+    local ChartParser = require("src.loaders.chart_parser")
     local parser = ChartParser:new()
     local chartData, err = parser:parseFile(path)
     

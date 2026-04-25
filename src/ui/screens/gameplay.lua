@@ -13,8 +13,8 @@ Gameplay.engine = nil
 Gameplay.replay = nil
 
 -- Managers
-local AudioManager = require("src.audio.manager")
-local InputManager = require("src.input.manager")
+local AudioManager = require("src.managers.audio_manager")
+local InputManager = require("src.managers.input_manager")
 local StateManager = require("src.core.state")
 
 -- Estado
@@ -42,7 +42,7 @@ Gameplay.columnKeys = {"d", "f", "j", "k"}
 
 function Gameplay:init()
     -- Inicializar engine
-    self.engine = require("src.gameplay.engine"):new()
+    self.engine = require("src.gameplay.engine.engine"):new()
     -- Inicializar sistema de replay
     self.replay = require("src.replay.system"):new()
 end
@@ -359,16 +359,39 @@ function Gameplay:drawUI()
     local minutes = math.floor(currentTime / 60)
     local seconds = math.floor(currentTime % 60)
     love.graphics.printf(string.format("%d:%02d", minutes, seconds), 1100, 55, 0, "right")
+    
+    -- Barra de Progreso
+    local endTime = self.engine:getChartEndTime()
+    local progress = math.min(1, math.max(0, currentTime / endTime))
+    love.graphics.setColor(0.3, 0.3, 0.3, 1)
+    love.graphics.rectangle("fill", 440, 10, 400, 10)
+    love.graphics.setColor(0.2, 0.6, 1, 1)
+    love.graphics.rectangle("fill", 440, 10, 400 * progress, 10)
+    
+    -- Barra de Vida (Health)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setFont(love.graphics.newFont(20))
+    love.graphics.print("HP", 30, 30)
+    
+    for i = 1, state.maxHealth do
+        if i <= state.health then
+            love.graphics.setColor(1, 0.2, 0.2, 1)
+            love.graphics.rectangle("fill", 70 + (i - 1) * 30, 32, 20, 20)
+        else
+            love.graphics.setColor(0.3, 0.3, 0.3, 1)
+            love.graphics.rectangle("fill", 70 + (i - 1) * 30, 32, 20, 20)
+        end
+    end
 end
 
 function Gameplay:getJudgmentColor(judgment)
     if judgment == "PERFECT" then
         return {1, 0.8, 0, 1}
-    elseif judgment == "GREAT" then
-        return {0.2, 1, 0.2, 1}
     elseif judgment == "GOOD" then
-        return {0.2, 0.6, 1, 1}
+        return {0.2, 1, 0.2, 1}
     elseif judgment == "BAD" then
+        return {0.2, 0.6, 1, 1}
+    elseif judgment == "MISS" then
         return {1, 0.3, 0.3, 1}
     else
         return {0.5, 0.5, 0.5, 1}
@@ -424,7 +447,7 @@ function Gameplay:onGameEnd()
     self.replay:setMetadata("score", engineState.score)
     self.replay:setMetadata("maxCombo", engineState.maxCombo)
     self.replay:setMetadata("accuracy", engineState.accuracy)
-    self.replay:setMetadata("grade", self.engine.scoring:calculateGrade())
+    self.replay:setMetadata("grade", engineState.grade)
     self.replay:setMetadata("mods", "")  
     
     -- Detener grabación
@@ -439,7 +462,7 @@ function Gameplay:onGameEnd()
         score = engineState.score,
         maxCombo = engineState.maxCombo,
         accuracy = engineState.accuracy,
-        grade = self.engine.scoring:calculateGrade(),
+        grade = engineState.dead and "FAILED" or self.engine.scoring:calculateGrade(),
         replayPath = replayPath
     })
 end

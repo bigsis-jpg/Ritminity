@@ -6,9 +6,9 @@
 local SongSelect = {}
 SongSelect.__index = SongSelect
 
-local ChartParser = require("src.chart.parser")
+local ChartParser = require("src.loaders.chart_parser")
 local StateManager = require("src.core.state")
-local AIGenerator = require("src.ai.generator")
+local AIGenerator = require("src.utils.ai_generator")
 
 -- Canciones disponibles
 SongSelect.songs = {}

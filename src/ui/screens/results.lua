@@ -15,13 +15,12 @@ function Results:init()
 end
 
 function Results:enter(params)
-    self.scoreData = params and params.scoreData or {
+    self.scoreData = params or {
         score = 1234567,
         maxCombo = 500,
         accuracy = 95.5,
-        grade = "S",
+        grade = "A",
         perfect = 800,
-        great = 100,
         good = 20,
         bad = 5,
         miss = 10
@@ -60,11 +59,10 @@ function Results:draw()
     local stats = {
         {"Max Combo", self.scoreData.maxCombo .. "x"},
         {"Accuracy", string.format("%.2f%%", self.scoreData.accuracy)},
-        {"Perfect", self.scoreData.perfect},
-        {"Great", self.scoreData.great},
-        {"Good", self.scoreData.good},
-        {"Bad", self.scoreData.bad},
-        {"Miss", self.scoreData.miss}
+        {"Perfect", self.scoreData.perfect or 0},
+        {"Good", self.scoreData.good or 0},
+        {"Bad", self.scoreData.bad or 0},
+        {"Miss", self.scoreData.miss or 0}
     }
     
     love.graphics.setFont(love.graphics.newFont(20))
@@ -86,16 +84,16 @@ function Results:draw()
 end
 
 function Results:getGradeColor(grade)
-    if grade == "SS" then
+    if grade == "A" then
         return {1, 0.8, 0, 1}
-    elseif grade == "S" then
-        return {1, 0.5, 0, 1}
-    elseif grade == "A" then
-        return {0.2, 1, 0.2, 1}
     elseif grade == "B" then
-        return {0.2, 0.8, 1, 1}
+        return {0.2, 1, 0.2, 1}
     elseif grade == "C" then
+        return {0.2, 0.8, 1, 1}
+    elseif grade == "D" then
         return {0.6, 0.6, 1, 1}
+    elseif grade == "FAILED" then
+        return {1, 0, 0, 1}
     else
         return {0.5, 0.5, 0.5, 1}
     end

@@ -1,55 +1,71 @@
 --[[
-    RITMINITY - Main Menu Screen
-    Pantalla principal del menú
+    RITMINITY - Main Menu
+    Menú principal del juego
 ]]
 
 local StateManager = require("src.core.state")
+local Button = require("src.ui.core.button")
 
 local MainMenu = {}
 MainMenu.__index = MainMenu
 
--- Opciones del menú
-MainMenu.options = {
-    {id = "solo", label = "Un Jugador", description = "Jugar en solitario"},
-    {id = "multiplayer", label = "Multijugador", description = "Jugar en línea con otros"},
-    {id = "editor", label = "Editor de Mapas", description = "Crear tus propios charts"},
-    {id = "results", label = "Puntuaciones", description = "Ver puntuaciones guardadas"},
-    {id = "settings", label = "Ajustes", description = "Configurar el juego"},
-    {id = "login", label = "Iniciar Sesión", description = "Acceder a tu cuenta"},
-    {id = "register", label = "Registrarse", description = "Crear una nueva cuenta"},
-    {id = "exit", label = "Salir al Escritorio", description = "Salir del juego"}
-}
-
--- Estado
-MainMenu.selectedIndex = 1
-MainMenu.animationTime = 0
-MainMenu.backgroundParticles = {}
-
 function MainMenu:init()
+    self.backgroundParticles = {}
+    self.animationTime = 0
+    self.selectedIndex = 1
+    
     -- Inicializar partículas de fondo
     for i = 1, 50 do
         table.insert(self.backgroundParticles, {
-            x = math.random() * 1280,
-            y = math.random() * 720,
-            vx = (math.random() - 0.5) * 0.5,
-            vy = (math.random() - 0.5) * 0.5,
-            size = math.random() * 3 + 1,
-            alpha = math.random() * 0.5 + 0.2
+            x = math.random(0, 1280),
+            y = math.random(0, 720),
+            size = math.random(1, 4),
+            speed = math.random(10, 30),
+            alpha = math.random(0.1, 0.5),
+            vx = math.random(-10, 10),
+            vy = math.random(-10, 10)
         })
+    end
+    
+    -- Crear Botones
+    self.buttons = {}
+    
+    local startY = 300
+    local spacing = 80
+    local buttonWidth = 400
+    local buttonHeight = 60
+    local buttonX = (1280 - buttonWidth) / 2
+    
+    self.optionsData = {
+        {id = "solo", label = "Un Jugador", description = "Jugar en solitario"},
+        {id = "multiplayer", label = "Multijugador", description = "Jugar en línea"},
+        {id = "editor", label = "Editor", description = "Crear o editar mapas"},
+        {id = "settings", label = "Opciones", description = "Configuración del juego"},
+        {id = "exit", label = "Salir", description = "Cerrar el juego"}
+    }
+    
+    for i, opt in ipairs(self.optionsData) do
+        local y = startY + (i - 1) * spacing
+        local btn = Button:new(buttonX, y, buttonWidth, buttonHeight, opt.label, function()
+            self:selectOption(opt.id)
+        end, opt.description)
+        table.insert(self.buttons, btn)
     end
 end
 
 function MainMenu:enter(params)
-    self.selectedIndex = 1
     self.animationTime = 0
+    self.selectedIndex = 1
     
-    -- Reproducir música del menú
-    -- AudioManager:playMusic("menu")
+    -- Resetear estado de botones
+    for i, btn in ipairs(self.buttons) do
+        btn.isHovered = false
+        btn.isSelected = (i == self.selectedIndex)
+        btn.isPressed = false
+    end
 end
 
 function MainMenu:exit()
-    -- Detener música
-    -- AudioManager:stopMusic()
 end
 
 function MainMenu:update(dt)
@@ -57,152 +73,109 @@ function MainMenu:update(dt)
     
     -- Actualizar partículas
     for _, particle in ipairs(self.backgroundParticles) do
-        particle.x = particle.x + particle.vx
-        particle.y = particle.y + particle.vy
+        particle.x = particle.x + particle.vx * dt
+        particle.y = particle.y + particle.vy * dt
         
         -- Rebotar en los bordes
-        if particle.x < 0 or particle.x > 1280 then
-            particle.vx = -particle.vx
-        end
-        if particle.y < 0 or particle.y > 720 then
-            particle.vy = -particle.vy
-        end
+        if particle.x < 0 or particle.x > 1280 then particle.vx = -particle.vx end
+        if particle.y < 0 or particle.y > 720 then particle.vy = -particle.vy end
+    end
+    
+    -- Actualizar Botones
+    for i, btn in ipairs(self.buttons) do
+        btn.isSelected = (i == self.selectedIndex)
+        btn:update(dt)
     end
 end
 
 function MainMenu:draw()
-    -- Fondo
+    -- Fondo base
     love.graphics.setColor(0.05, 0.05, 0.1, 1)
     love.graphics.rectangle("fill", 0, 0, 1280, 720)
     
-    -- Partículas de fondo
+    -- Efecto de gradiente animado
+    local r = 0.1 + math.sin(self.animationTime * 0.5) * 0.05
+    local g = 0.1 + math.cos(self.animationTime * 0.3) * 0.05
+    local b = 0.2 + math.sin(self.animationTime * 0.4) * 0.1
+    love.graphics.setColor(r, g, b, 0.5)
+    love.graphics.rectangle("fill", 0, 0, 1280, 720)
+    
+    -- Partículas
     for _, particle in ipairs(self.backgroundParticles) do
-        love.graphics.setColor(0.2, 0.6, 1, particle.alpha)
+        love.graphics.setColor(0.5, 0.8, 1, particle.alpha)
         love.graphics.circle("fill", particle.x, particle.y, particle.size)
     end
     
-    -- Título
-    local titleY = 150
-    local titleScale = 1.0 + math.sin(self.animationTime * 2) * 0.02
+    -- Logo / Título
+    love.graphics.setColor(1, 1, 1, 1)
+    local titleFont = love.graphics.newFont(60)
+    love.graphics.setFont(titleFont)
     
-    love.graphics.setFont(love.graphics.newFont(60))
-    love.graphics.setColor(1, 0.5, 0, 1)
-    love.graphics.printf("RITMINITY", 0, titleY - 30, 1280, "center")
+    -- Animación de título
+    local titleY = 100 + math.sin(self.animationTime * 2) * 10
+    love.graphics.printf("RITMINITY", 0, titleY, 1280, "center")
     
-    love.graphics.setFont(love.graphics.newFont(20))
-    love.graphics.setColor(0.5, 0.5, 0.5, 1)
-    love.graphics.printf("A Rhythm Game Experience", 0, titleY + 40, 1280, "center")
+    local subtitleFont = love.graphics.newFont(20)
+    love.graphics.setFont(subtitleFont)
+    love.graphics.setColor(0.5, 0.8, 1, 1)
+    love.graphics.printf("The Ultimate Rhythm Experience", 0, titleY + 70, 1280, "center")
     
-    -- Opciones del menú
-    local startY = 300
-    local spacing = 60
-    
-    for i, option in ipairs(self.options) do
-        local y = startY + (i - 1) * spacing
-        local selected = (i == self.selectedIndex)
-        
-        -- Dibujar siempre una caja para el botón
-        if selected then
-            love.graphics.setColor(0.2, 0.6, 1, 0.3)
-            love.graphics.rectangle("fill", 440, y - 25, 400, 50)
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.rectangle("line", 440, y - 25, 400, 50)
-            
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.setFont(love.graphics.newFont(30))
-        else
-            love.graphics.setColor(0.1, 0.1, 0.15, 0.8)
-            love.graphics.rectangle("fill", 440, y - 25, 400, 50)
-            love.graphics.setColor(0.3, 0.3, 0.3, 1)
-            love.graphics.rectangle("line", 440, y - 25, 400, 50)
-            
-            love.graphics.setColor(0.5, 0.5, 0.5, 1)
-            love.graphics.setFont(love.graphics.newFont(24))
-        end
-        
-        -- Texto centrado correctamente (x=0, limit=1280)
-        love.graphics.printf(option.label, 0, y - 15, 1280, "center")
-        
-        -- Descripción
-        if selected then
-            love.graphics.setFont(love.graphics.newFont(14))
-            love.graphics.setColor(0.7, 0.7, 0.7, 1)
-            love.graphics.printf(option.description, 0, y + 20, 1280, "center")
-        end
+    -- Dibujar Botones
+    for _, btn in ipairs(self.buttons) do
+        btn:draw()
     end
     
-    -- Versión
-    love.graphics.setFont(love.graphics.newFont(12))
-    love.graphics.setColor(0.3, 0.3, 0.3, 1)
-    love.graphics.printf("v1.0.0", 0, 700, 1280, "center")
-    
-    -- Controles
-    love.graphics.setColor(0.4, 0.4, 0.4, 1)
-    love.graphics.setFont(love.graphics.newFont(12))
-    love.graphics.printf("↑↓/Mouse: Navegar  |  Enter/Clic: Seleccionar  |  Esc: Salir", 0, 680, 1280, "center")
+    -- Info de controles
+    love.graphics.setFont(love.graphics.newFont(14))
+    love.graphics.setColor(0.5, 0.5, 0.5, 1)
+    love.graphics.printf("Use ↑/↓ keys or Mouse to navigate. Enter to select.", 0, 680, 1280, "center")
 end
 
-function MainMenu:onEscape()
-    -- Salir del juego
-    love.event.quit()
-end
-
--- Manejar input de teclado
+-- Input de Teclado
 function MainMenu:handleInput(key)
     if key == "up" or key == "w" then
         self.selectedIndex = self.selectedIndex - 1
         if self.selectedIndex < 1 then
-            self.selectedIndex = #self.options
+            self.selectedIndex = #self.buttons
         end
     elseif key == "down" or key == "s" then
         self.selectedIndex = self.selectedIndex + 1
-        if self.selectedIndex > #self.options then
+        if self.selectedIndex > #self.buttons then
             self.selectedIndex = 1
         end
     elseif key == "return" or key == "enter" then
-        self:selectOption(self.options[self.selectedIndex].id)
+        self.buttons[self.selectedIndex]:click()
     end
 end
 
 -- Hover del mouse
 function MainMenu:mousemoved(x, y, dx, dy)
-    local startY = 300
-    local spacing = 60
-    local found = false
-    
-    for i, option in ipairs(self.options) do
-        local optY = startY + (i - 1) * spacing
-        -- Hitbox del botón: x(440 a 840), y(optY-25 a optY+25)
-        if x >= 440 and x <= 840 and y >= (optY - 25) and y <= (optY + 25) then
+    local hoveredAny = false
+    for i, btn in ipairs(self.buttons) do
+        if btn:mousemoved(x, y) then
             self.selectedIndex = i
-            found = true
-            break
+            hoveredAny = true
         end
-    end
-    
-    if not found then
-        -- Opcional: se podría hacer que no se seleccione nada, pero como el menú requiere al menos 1 seleccionado para el teclado:
-        -- Dejarlo como está, o tal vez establecer una variable `mouseHover`
     end
 end
 
 -- Clic del mouse
 function MainMenu:mousepressed(x, y, button)
-    if button == 1 then
-        local startY = 300
-        local spacing = 60
-        
-        for i, option in ipairs(self.options) do
-            local optY = startY + (i - 1) * spacing
-            if x >= 440 and x <= 840 and y >= (optY - 25) and y <= (optY + 25) then
-                self:selectOption(option.id)
-                break
-            end
+    for _, btn in ipairs(self.buttons) do
+        if btn:mousepressed(x, y, button) then
+            break
         end
     end
 end
 
--- Seleccionar opción
+-- Release del mouse
+function MainMenu:mousereleased(x, y, button)
+    for _, btn in ipairs(self.buttons) do
+        btn:mousereleased(x, y, button)
+    end
+end
+
+-- Lógica de selección
 function MainMenu:selectOption(optionId)
     if optionId == "solo" then
         StateManager:change("songselect")
@@ -210,14 +183,8 @@ function MainMenu:selectOption(optionId)
         StateManager:change("multiplayer")
     elseif optionId == "editor" then
         StateManager:change("editor")
-    elseif optionId == "results" then
-        StateManager:change("results")
     elseif optionId == "settings" then
         StateManager:change("settings")
-    elseif optionId == "login" then
-        StateManager:change("auth.login")
-    elseif optionId == "register" then
-        StateManager:change("auth.register")
     elseif optionId == "exit" then
         love.event.quit()
     end

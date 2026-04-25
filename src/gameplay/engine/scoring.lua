@@ -9,7 +9,6 @@ ScoringSystem.__index = ScoringSystem
 -- Puntuación por juicio
 ScoringSystem.judgmentValues = {
     perfect = 300,
-    great = 200,
     good = 100,
     bad = 50,
     miss = 0
@@ -31,7 +30,6 @@ ScoringSystem.comboMultipliers = {
 -- Pesos para accuracy
 ScoringSystem.accuracyWeights = {
     perfect = 1.0,
-    great = 0.8,
     good = 0.5,
     bad = 0.2,
     miss = 0
@@ -52,7 +50,6 @@ function ScoringSystem:reset()
     self.hitNotes = 0
     self.judgments = {
         perfect = 0,
-        great = 0,
         good = 0,
         bad = 0,
         miss = 0
@@ -120,20 +117,16 @@ end
 function ScoringSystem:calculateGrade()
     local accuracy = self:calculateAccuracy()
     
-    if accuracy >= 98 then
-        return "SS"
-    elseif accuracy >= 95 then
-        return "S"
-    elseif accuracy >= 90 then
+    if accuracy >= 95 then
         return "A"
     elseif accuracy >= 85 then
         return "B"
-    elseif accuracy >= 80 then
+    elseif accuracy >= 75 then
         return "C"
-    elseif accuracy >= 70 then
+    elseif accuracy >= 65 then
         return "D"
     else
-        return "F"
+        return "E"
     end
 end
 

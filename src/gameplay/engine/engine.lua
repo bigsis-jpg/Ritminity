@@ -18,10 +18,10 @@ GameplayEngine.config = {
     noteSpeed = 1.0,
     scrollSpeed = 600,
     judgeWindow = {
-        perfect = 20,
-        great = 40,
-        good = 60,
-        miss = 80
+        perfect = 40,  -- ms (más realista, osu!mania OD8 es +/- 40ms)
+        good = 70,     -- ms
+        bad = 100,     -- ms
+        miss = 120     -- ms
     }
 }
 
@@ -44,7 +44,10 @@ GameplayEngine.state = {
     greatHits = 0,
     goodHits = 0,
     badHits = 0,
-    grade = "F"
+    grade = "F",
+    health = 4,
+    maxHealth = 4,
+    dead = false
 }
 
 -- Sistema de puntuación
@@ -87,11 +90,14 @@ function GameplayEngine:initialize(config)
         greatHits = 0,
         goodHits = 0,
         badHits = 0,
-        grade = "F"
+        grade = "F",
+        health = 4,
+        maxHealth = 4,
+        dead = false
     }
     
     -- Inicializar sistema de puntuación
-    self.scoring = require("src.gameplay.scoring"):new()
+    self.scoring = require("src.gameplay.engine.scoring"):new()
     
     -- Inicializar columnas
     self:initColumns()
@@ -161,6 +167,14 @@ end
 -- Reanudar juego
 function GameplayEngine:resume()
     self.state.paused = false
+end
+
+-- Morir
+function GameplayEngine:die()
+    self.state.playing = false
+    self.state.dead = true
+    self.state.finished = true
+    self:calculateGrade()
 end
 
 -- Finalizar juego
@@ -261,10 +275,12 @@ function GameplayEngine:keyPressed(column)
             local judgment = "bad"
             if diffMs <= self.config.judgeWindow.perfect then
                 judgment = "perfect"
-            elseif diffMs <= self.config.judgeWindow.great then
-                judgment = "great"
             elseif diffMs <= self.config.judgeWindow.good then
                 judgment = "good"
+            elseif diffMs <= self.config.judgeWindow.bad then
+                judgment = "bad"
+            else
+                judgment = "miss"
             end
             
             if closestNote.type == "hold" then
@@ -317,12 +333,14 @@ function GameplayEngine:handleHit(note, judgment, isTail)
     -- Actualizar contadores por tipo de juicio
     if judgment == "perfect" then
         self.state.perfectHits = self.scoring.judgments.perfect
-    elseif judgment == "great" then
-        self.state.greatHits = self.scoring.judgments.great
     elseif judgment == "good" then
         self.state.goodHits = self.scoring.judgments.good
     elseif judgment == "bad" then
         self.state.badHits = self.scoring.judgments.bad
+        self:takeDamage()
+    elseif judgment == "miss" then
+        self.state.missedNotes = self.scoring.judgments.miss
+        self:takeDamage()
     end
     self.state.missedNotes = self.scoring.judgments.miss
     
@@ -356,6 +374,8 @@ function GameplayEngine:handleMiss(note)
     self.state.score = self.scoring.score
     self.state.accuracy = self.scoring:calculateAccuracy()
     
+    self:takeDamage()
+    
     -- Callback
     if self.callbacks.onNoteMiss then
         self.callbacks.onNoteMiss(note)
@@ -367,6 +387,14 @@ function GameplayEngine:handleMiss(note)
     
     if self.callbacks.onGradeChange then
         self.callbacks.onGradeChange(self.scoring:calculateGrade())
+    end
+end
+
+-- Sistema de Daño
+function GameplayEngine:takeDamage()
+    self.state.health = self.state.health - 1
+    if self.state.health <= 0 and not self.state.dead then
+        self:die()
     end
 end
 
@@ -457,7 +485,10 @@ function GameplayEngine:reset()
         greatHits = 0,
         goodHits = 0,
         badHits = 0,
-        grade = "F"
+        grade = "F",
+        health = 4,
+        maxHealth = 4,
+        dead = false
     }
     
     -- Reiniciar notas

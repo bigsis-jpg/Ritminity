@@ -133,7 +133,7 @@ end
 
 -- Cargar chart desde archivo
 function Editor:loadChart(path)
-    local chartParser = require("src.chart.parser")
+    local chartParser = require("src.loaders.chart_parser")
     local chartData = chartParser:load(path)
     
     if chartData then
@@ -146,7 +146,7 @@ end
 
 -- Guardar chart a archivo
 function Editor:saveChart(path)
-    local chartParser = require("src.chart.parser")
+    local chartParser = require("src.loaders.chart_parser")
     return chartParser:save(self.chart, path)
 end
 
