@@ -5,6 +5,9 @@
 
 local StateManager = require("src.core.state")
 
+-- Usar pcall para manejar módulos opcionales
+local json_ok, json = pcall(require, "json")
+
 local Editor = {}
 Editor.__index = Editor
 

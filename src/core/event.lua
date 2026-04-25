@@ -11,6 +11,61 @@ EventSystem.listeners = {}
 EventSystem.eventQueue = {}
 EventSystem.maxQueueSize = 100
 
+-- Eventos predefinidos del juego (definidos al inicio para evitar errores de nil)
+EventSystem.EVENTS = {
+    -- Gameplay
+    GAME_START = "game:start",
+    GAME_PAUSE = "game:pause",
+    GAME_RESUME = "game:resume",
+    GAME_END = "game:end",
+    NOTE_HIT = "note:hit",
+    NOTE_MISS = "note:miss",
+    COMBO_BREAK = "combo:break",
+    SCORE_UPDATE = "score:update",
+    ACCURACY_UPDATE = "accuracy:update",
+    
+    -- Audio
+    AUDIO_LOAD = "audio:load",
+    AUDIO_PLAY = "audio:play",
+    AUDIO_PAUSE = "audio:pause",
+    AUDIO_STOP = "audio:stop",
+    AUDIO_SYNC = "audio:sync",
+    
+    -- Input
+    KEY_PRESS = "input:keypress",
+    KEY_RELEASE = "input:keyrelease",
+    MOUSE_PRESS = "input:mousepress",
+    MOUSE_RELEASE = "input:mouserelease",
+    
+    -- UI
+    SCREEN_CHANGE = "screen:change",
+    MENU_SELECT = "menu:select",
+    MENU_CONFIRM = "menu:confirm",
+    MENU_BACK = "menu:back",
+    
+    -- Network
+    NETWORK_CONNECT = "network:connect",
+    NETWORK_DISCONNECT = "network:disconnect",
+    NETWORK_ERROR = "network:error",
+    LOBBY_JOIN = "lobby:join",
+    LOBBY_LEAVE = "lobby:leave",
+    PLAYER_READY = "player:ready",
+    
+    -- Chart
+    CHART_LOAD = "chart:load",
+    CHART_UNLOAD = "chart:unload",
+    CHART_COMPLETE = "chart:complete",
+    
+    -- Mods
+    MOD_TOGGLE = "mod:toggle",
+    MOD_APPLY = "mod:apply",
+    
+    -- Replay
+    REPLAY_START = "replay:start",
+    REPLAY_STOP = "replay:stop",
+    REPLAY_SAVE = "replay:save"
+}
+
 function EventSystem:initialize()
     self.listeners = {}
     self.eventQueue = {}
@@ -121,60 +176,5 @@ function EventSystem:once(eventName, callback, context)
     listenerId = self:on(eventName, wrapperFunc, context)
     return listenerId
 end
-
--- Eventos predefinidos del juego
-EventSystem.EVENTS = {
-    -- Gameplay
-    GAME_START = "game:start",
-    GAME_PAUSE = "game:pause",
-    GAME_RESUME = "game:resume",
-    GAME_END = "game:end",
-    NOTE_HIT = "note:hit",
-    NOTE_MISS = "note:miss",
-    COMBO_BREAK = "combo:break",
-    SCORE_UPDATE = "score:update",
-    ACCURACY_UPDATE = "accuracy:update",
-    
-    -- Audio
-    AUDIO_LOAD = "audio:load",
-    AUDIO_PLAY = "audio:play",
-    AUDIO_PAUSE = "audio:pause",
-    AUDIO_STOP = "audio:stop",
-    AUDIO_SYNC = "audio:sync",
-    
-    -- Input
-    KEY_PRESS = "input:keypress",
-    KEY_RELEASE = "input:keyrelease",
-    MOUSE_PRESS = "input:mousepress",
-    MOUSE_RELEASE = "input:mouserelease",
-    
-    -- UI
-    SCREEN_CHANGE = "screen:change",
-    MENU_SELECT = "menu:select",
-    MENU_CONFIRM = "menu:confirm",
-    MENU_BACK = "menu:back",
-    
-    -- Network
-    NETWORK_CONNECT = "network:connect",
-    NETWORK_DISCONNECT = "network:disconnect",
-    NETWORK_ERROR = "network:error",
-    LOBBY_JOIN = "lobby:join",
-    LOBBY_LEAVE = "lobby:leave",
-    PLAYER_READY = "player:ready",
-    
-    -- Chart
-    CHART_LOAD = "chart:load",
-    CHART_UNLOAD = "chart:unload",
-    CHART_COMPLETE = "chart:complete",
-    
-    -- Mods
-    MOD_TOGGLE = "mod:toggle",
-    MOD_APPLY = "mod:apply",
-    
-    -- Replay
-    REPLAY_START = "replay:start",
-    REPLAY_STOP = "replay:stop",
-    REPLAY_SAVE = "replay:save"
-}
 
 return EventSystem

@@ -3,9 +3,11 @@
     Sistema de autenticación para el cliente
 ]]
 
-local json = require("json")
-local http = require("socket.http")
-local ltn12 = require("ltn12")
+-- Usar pcall para manejar módulos opcionales
+local json_ok, json = pcall(require, "json")
+local http_ok, http = pcall(require, "socket.http")
+local ltn12_ok, ltn12 = pcall(require, "ltn12")
+
 local SESSION_LIFETIME = 86400 -- 24 hours in seconds
 
 local AuthManager = {}
@@ -22,6 +24,9 @@ AuthManager.state = {
 -- URLs de la API
 AuthManager.apiUrl = "http://localhost/ritminity/api"
 
+-- Verificar si los módulos están disponibles
+AuthManager.modulesAvailable = json_ok and http_ok and ltn12_ok
+
 function AuthManager:new()
     local self = setmetatable({}, AuthManager)
     self:loadSession()
@@ -29,6 +34,8 @@ function AuthManager:new()
 end
 
 function AuthManager:loadSession()
+    if not json_ok then return end
+    
     -- Intentar cargar sesión desde archivo local
     local sessionData = love.filesystem.read("session.json")
     if sessionData then
@@ -46,6 +53,8 @@ function AuthManager:loadSession()
 end
 
 function AuthManager:saveSession()
+    if not json_ok then return end
+    
     -- Guardar sesión en archivo local
     local sessionData = {
         user = self.state.user,
@@ -80,6 +89,12 @@ function AuthManager:getToken()
 end
 
 function AuthManager:login(username, password, callback)
+    -- Verificar si los módulos están disponibles
+    if not self.modulesAvailable then
+        if callback then callback(false, "Network modules not available") end
+        return
+    end
+    
     -- Validar entrada
     if not username or username == "" then
         if callback then callback(false, "Username is required") end
@@ -133,6 +148,12 @@ function AuthManager:login(username, password, callback)
 end
 
 function AuthManager:register(username, email, password, callback)
+    -- Verificar si los módulos están disponibles
+    if not self.modulesAvailable then
+        if callback then callback(false, "Network modules not available") end
+        return
+    end
+    
     -- Validar entrada
     if not username or username == "" then
         if callback then callback(false, "Username is required") end
@@ -192,6 +213,13 @@ function AuthManager:register(username, email, password, callback)
 end
 
 function AuthManager:logout(callback)
+    -- Verificar si los módulos están disponibles
+    if not self.modulesAvailable then
+        self:clearSession()
+        if callback then callback(true, "Logout successful (offline)") end
+        return
+    end
+    
     if not self:isLoggedIn() then
         if callback then callback(true, "Already logged out") end
         return

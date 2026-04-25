@@ -310,8 +310,8 @@ function Editor:selectNote(note)
     
     table.insert(self.selectedNotes, note)
     
-    if self.callbacks onSelectionChange then
-        self.callbacks:onSelectionChange(self.selectedNotes)
+    if self.callbacks.onSelectionChange then
+        self.callbacks.onSelectionChange(self.selectedNotes)
     end
 end
 
@@ -338,8 +338,8 @@ end
 function Editor:deselectAll()
     self.selectedNotes = {}
     
-    if self.callbacks onSelectionChange then
-        self.callbacks:onSelectionChange(self.selectedNotes)
+    if self.callbacks.onSelectionChange then
+        self.callbacks.onSelectionChange(self.selectedNotes)
     end
 end
 
@@ -361,8 +361,8 @@ function Editor:moveSelectedNotes(deltaTime, deltaColumn)
         return a.time < b.time
     end)
     
-    if self.callbacks onChartChange then
-        self.callbacks:onChartChange(self.chart)
+    if self.callbacks.onChartChange then
+        self.callbacks.onChartChange(self.chart)
     end
 end
 
@@ -414,8 +414,8 @@ function Editor:pasteNotes(copiedNotes, pasteTime)
         return a.time < b.time
     end)
     
-    if self.callbacks onChartChange then
-        self.callbacks:onChartChange(self.chart)
+    if self.callbacks.onChartChange then
+        self.callbacks.onChartChange(self.chart)
     end
 end
 

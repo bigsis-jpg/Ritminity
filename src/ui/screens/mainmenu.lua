@@ -168,14 +168,21 @@ end
 function MainMenu:mousemoved(x, y, dx, dy)
     local startY = 300
     local spacing = 60
+    local found = false
     
     for i, option in ipairs(self.options) do
         local optY = startY + (i - 1) * spacing
         -- Hitbox del botón: x(440 a 840), y(optY-25 a optY+25)
         if x >= 440 and x <= 840 and y >= (optY - 25) and y <= (optY + 25) then
             self.selectedIndex = i
+            found = true
             break
         end
+    end
+    
+    if not found then
+        -- Opcional: se podría hacer que no se seleccione nada, pero como el menú requiere al menos 1 seleccionado para el teclado:
+        -- Dejarlo como está, o tal vez establecer una variable `mouseHover`
     end
 end
 
