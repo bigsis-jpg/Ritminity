@@ -1,0 +1,28 @@
+#TITLE:StepMania Test;
+#ARTIST:Ritminity;
+#MUSIC:audio.mp3;
+#OFFSET:-0.030;
+#BPMS:0.000=120.000;
+#STOPS:;
+#SAMPLESTART:45.000;
+#SAMPLELENGTH:15.000;
+
+#NOTES:
+     dance-single:
+     Ritminity:
+     Hard:
+     8:
+     0.8,0.8,0.8,0.8,0.8:
+0000
+1000
+0100
+0010
+0001
+,
+1001
+0000
+2000
+0000
+3000
+0000
+;
