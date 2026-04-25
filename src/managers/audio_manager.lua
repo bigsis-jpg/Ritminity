@@ -35,7 +35,10 @@ function AudioManager:initialize()
     self.systemTime = 0
     self.audioTime = 0
     self.offset = 0
+<<<<<<< HEAD
     self.deltaAccumulator = 0
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     self.lastUpdateTime = love.timer.getTime()
     
     -- Crear canales
@@ -51,10 +54,13 @@ end
 
 -- Cargar música
 function AudioManager:loadMusic(path)
+<<<<<<< HEAD
     if not path or not love.filesystem.getInfo(path) then
         print("[AudioManager] Warning: Music file not found: " .. tostring(path))
         return nil
     end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     local music = love.audio.newSource(path, "stream")
     if music then
         music:setLooping(false)
@@ -64,10 +70,13 @@ end
 
 -- Cargar sonido
 function AudioManager:loadSound(path)
+<<<<<<< HEAD
     if not path or not love.filesystem.getInfo(path) then
         print("[AudioManager] Warning: Sound file not found: " .. tostring(path))
         return nil
     end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     local sound = love.audio.newSource(path, "static")
     return sound
 end
@@ -82,12 +91,15 @@ function AudioManager:playMusic(music, volume)
     if music then
         music:setVolume((volume or 1.0) * self.musicVolume * self.masterVolume)
         music:play()
+<<<<<<< HEAD
         
         -- Resetear relojes para evitar saltos de tiempo
         self.audioTime = 0
         self.systemTime = 0
         self.lastUpdateTime = love.timer.getTime()
         self.deltaAccumulator = 0
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 
@@ -109,6 +121,7 @@ end
 -- Reanudar música
 function AudioManager:resumeMusic()
     if self.currentMusic then
+<<<<<<< HEAD
         self.currentMusic:play()
     end
 end
@@ -116,6 +129,18 @@ end
 -- Obtener tiempo actual de la música (Interpolado)
 function AudioManager:getMusicTime()
     return self.audioTime
+=======
+        self.currentMusic:resume()
+    end
+end
+
+-- Obtener tiempo actual de la música
+function AudioManager:getMusicTime()
+    if self.currentMusic then
+        return self.currentMusic:tell()
+    end
+    return 0
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 end
 
 -- Obtener tiempo del sistema
@@ -128,7 +153,11 @@ function AudioManager:getAudioTime()
     return self.audioTime - self.offset
 end
 
+<<<<<<< HEAD
 -- Sincronizar tiempos con interpolación de alta precisión
+=======
+-- Sincronizar tiempos
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 function AudioManager:sync()
     local currentTime = love.timer.getTime()
     local dt = currentTime - self.lastUpdateTime
@@ -137,6 +166,7 @@ function AudioManager:sync()
     -- Actualizar tiempo del sistema
     self.systemTime = self.systemTime + dt
     
+<<<<<<< HEAD
     -- Sincronizar con tiempo de audio con interpolación
     if self.currentMusic and self.currentMusic:isPlaying() then
         local rawTime = self.currentMusic:tell()
@@ -153,11 +183,19 @@ function AudioManager:sync()
     else
         -- No saltar a systemTime, mantener el tiempo actual o esperar al audio
         self.deltaAccumulator = 0
+=======
+    -- Sincronizar con tiempo de audio
+    if self.currentMusic and self.currentMusic:isPlaying() then
+        self.audioTime = self.currentMusic:tell()
+    else
+        self.audioTime = self.systemTime
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 
 -- Reproducir sonido en un canal
 function AudioManager:playSound(sound, volume, pitch, pan)
+<<<<<<< HEAD
     if not sound then return nil end
     
     -- Si es un string, es un error de uso en este punto o un path
@@ -182,6 +220,16 @@ function AudioManager:playSound(sound, volume, pitch, pan)
         clone:setPitch(pitch or 1.0)
         -- setPan no existe en Sources en Love2D estándar, se usa setRelative o similar 
         -- pero para simplicidad lo omitimos o usamos un wrapper si fuera necesario
+=======
+    -- Buscar canal libre
+    local channel = self:findFreeChannel()
+    
+    if channel and sound then
+        local clone = sound:clone()
+        clone:setVolume((volume or 1.0) * self.effectVolume * self.masterVolume)
+        clone:setPitch(pitch or 1.0)
+        clone:setPan(pan or 0)
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         clone:play()
         
         channel.source = clone

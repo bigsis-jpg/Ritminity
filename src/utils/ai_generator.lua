@@ -76,21 +76,32 @@ function AIChartGenerator:generateFromAudio(audioPath)
     
     -- Detectar beats reales analizando las frecuencias de energía
     local beats = self:detectBeats(soundData)
+<<<<<<< HEAD
     print(string.format("[AI] Detected %d raw energy peaks", #beats))
     
     -- Estimar el BPM de la canción basándose en los beats encontrados
     chart.metadata.bpm = self:estimateBPM(beats)
     print(string.format("[AI] Estimated BPM: %d", chart.metadata.bpm))
+=======
+    
+    -- Estimar el BPM de la canción basándose en los beats encontrados
+    chart.metadata.bpm = self:estimateBPM(beats)
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     -- Generar notas basadas en los picos reales encontrados
     for _, beat in ipairs(beats) do
         -- Densidad: solo incluir esta nota si pasa la probabilidad configurada
+<<<<<<< HEAD
         if math.random() < (self.config.density or 0.5) then
+=======
+        if math.random() < self.config.density then
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
             local note = self:generateNoteForBeat(beat)
             table.insert(chart.notes, note)
         end
     end
     
+<<<<<<< HEAD
     -- FALLBACK: Si la detección falló o dio muy pocas notas, generar rítmicamente
     if #chart.notes < 20 then
         print("[AI] WARNING: Low beat detection count. Applying rhythmic fallback.")
@@ -136,6 +147,11 @@ function AIChartGenerator:generateRhythmicFallback(duration, bpm)
     return notes
 end
 
+=======
+    return chart
+end
+
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 -- Estimar BPM en base a los intervalos de notas
 function AIChartGenerator:estimateBPM(beats)
     if #beats < 2 then return 120 end
@@ -291,6 +307,7 @@ function AIChartGenerator:detectBeats(soundData)
             local averageEnergy = localEnergySum / historySize
             
             -- Detectar si este bloque de tiempo es un golpe fuerte (Pico de energía)
+<<<<<<< HEAD
             -- Umbral reducido de 0.05 a 0.01 para mayor sensibilidad en canciones suaves
             if windowEnergy > (averageEnergy * threshold) and windowEnergy > 0.01 then
                 local timeInMs = (i / sampleRate) * 1000
@@ -300,6 +317,15 @@ function AIChartGenerator:detectBeats(soundData)
                 if #beats == 0 or (timeInMs - beats[#beats].time >= minIntervalMs) then
                     table.insert(beats, {
                         time = timeInMs,
+=======
+            if windowEnergy > (averageEnergy * threshold) and windowEnergy > 0.05 then
+                local timeInSeconds = i / sampleRate
+                
+                -- Prevenir clustering (notas encimadas) respetando minInterval
+                if #beats == 0 or (timeInSeconds - beats[#beats].time >= self.config.minInterval) then
+                    table.insert(beats, {
+                        time = timeInSeconds,
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
                         strength = windowEnergy,
                         type = "downbeat"
                     })
@@ -336,7 +362,10 @@ function AIChartGenerator:generateNoteForBeat(beat)
     return {
         time = beat.time,
         column = column,
+<<<<<<< HEAD
         lane = column, -- Alias solicitado
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         type = "tap",
         holdTime = 0
     }

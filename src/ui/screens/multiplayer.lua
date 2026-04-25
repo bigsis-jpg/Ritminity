@@ -31,6 +31,7 @@ function Multiplayer:enter(params)
     
     -- Cargar lobbies disponibles (simulado)
     self.lobbies = {
+<<<<<<< HEAD
         {
             id = 1, 
             name = "Test Room 1", 
@@ -50,6 +51,10 @@ function Multiplayer:enter(params)
             maxPlayers = 4, 
             ping = 30
         }
+=======
+        {id = 1, name = "Test Room 1", players = 2, maxPlayers = 8, ping = 50},
+        {id = 2, name = "Practice Room", players = 1, maxPlayers = 4, ping = 30}
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     }
 end
 
@@ -140,7 +145,11 @@ function Multiplayer:drawBrowser()
         love.graphics.print(lobby.name, 250, y + 15)
         
         love.graphics.setColor(0.5, 0.5, 0.5, 1)
+<<<<<<< HEAD
         love.graphics.print(#lobby.players .. "/" .. lobby.maxPlayers, 900, y + 15)
+=======
+        love.graphics.print(lobby.players .. "/" .. lobby.maxPlayers, 900, y + 15)
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         love.graphics.print(lobby.ping .. "ms", 1000, y + 15)
     end
     
@@ -228,6 +237,7 @@ function Multiplayer:handleInput(key)
             -- Toggle ready
         elseif key == "return" or key == "enter" then
             -- Start game
+<<<<<<< HEAD
             if self.currentLobby then
                 StateManager:change("gameplay", {
                     song = {title = "Multiplayer Match", artist = "Mixed", bpm = 128},
@@ -235,6 +245,8 @@ function Multiplayer:handleInput(key)
                     from = "multiplayer"
                 })
             end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         end
     end
 end

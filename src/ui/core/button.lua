@@ -25,8 +25,11 @@ function Button:new(x, y, w, h, text, onClick, description)
     self.hoverAlpha = 0
     self.scale = 1.0
     self.pressedTimer = 0
+<<<<<<< HEAD
     self.entryProgress = 0
     self.pulseTimer = 0
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     -- Estilos
     self.font = love.graphics.newFont(24)
@@ -36,15 +39,19 @@ function Button:new(x, y, w, h, text, onClick, description)
 end
 
 function Button:update(dt)
+<<<<<<< HEAD
     -- Animación de entrada
     if self.entryProgress < 1 then
         self.entryProgress = math.min(1, self.entryProgress + dt * 2)
     end
 
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     -- Transición suave del alpha de hover
     local targetAlpha = (self.isHovered or self.isSelected) and 1.0 or 0.0
     self.hoverAlpha = self.hoverAlpha + (targetAlpha - self.hoverAlpha) * 10 * dt
     
+<<<<<<< HEAD
     -- Pulso de selección
     if self.isSelected then
         self.pulseTimer = self.pulseTimer + dt * 5
@@ -55,20 +62,30 @@ function Button:update(dt)
     -- Efecto de escala al hacer clic
     if self.isPressed then
         self.scale = self.scale + (0.92 - self.scale) * 25 * dt
+=======
+    -- Efecto de escala al hacer clic
+    if self.isPressed then
+        self.scale = self.scale + (0.95 - self.scale) * 20 * dt
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         self.pressedTimer = self.pressedTimer + dt
         if self.pressedTimer > 0.1 then
             self.isPressed = false
         end
     else
+<<<<<<< HEAD
         local targetScale = 1.0
         if self.isSelected or self.isHovered then
             targetScale = 1.05 + math.sin(self.pulseTimer) * 0.02
         end
         self.scale = self.scale + (targetScale - self.scale) * 15 * dt
+=======
+        self.scale = self.scale + (1.0 - self.scale) * 15 * dt
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 
 function Button:draw()
+<<<<<<< HEAD
     if self.entryProgress <= 0 then return end
     
     love.graphics.push()
@@ -80,12 +97,19 @@ function Button:draw()
     
     -- Centrar escala
     local cx = drawX + self.w / 2
+=======
+    love.graphics.push()
+    
+    -- Centrar escala
+    local cx = self.x + self.w / 2
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     local cy = self.y + self.h / 2
     love.graphics.translate(cx, cy)
     love.graphics.scale(self.scale, self.scale)
     love.graphics.translate(-cx, -cy)
 
     -- Fondo base
+<<<<<<< HEAD
     love.graphics.setColor(0.1, 0.1, 0.15, 0.8 * drawAlpha)
     love.graphics.rectangle("fill", drawX, self.y, self.w, self.h, 5, 5)
     
@@ -115,6 +139,30 @@ function Button:draw()
         love.graphics.setColor(1, 1, 1, 1 * drawAlpha)
     else
         love.graphics.setColor(0.6, 0.6, 0.6, 0.8 * drawAlpha)
+=======
+    love.graphics.setColor(0.1, 0.1, 0.15, 0.8)
+    love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, 5, 5)
+    
+    -- Fondo hover
+    if self.hoverAlpha > 0 then
+        love.graphics.setColor(0.2, 0.6, 1, 0.3 * self.hoverAlpha)
+        love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, 5, 5)
+    end
+    
+    -- Borde
+    if self.isHovered or self.isSelected then
+        love.graphics.setColor(1, 1, 1, 1)
+    else
+        love.graphics.setColor(0.3, 0.3, 0.3, 1)
+    end
+    love.graphics.rectangle("line", self.x, self.y, self.w, self.h, 5, 5)
+    
+    -- Texto
+    if self.isHovered or self.isSelected then
+        love.graphics.setColor(1, 1, 1, 1)
+    else
+        love.graphics.setColor(0.5, 0.5, 0.5, 1)
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
     love.graphics.setFont(self.font)
     
@@ -122,15 +170,24 @@ function Button:draw()
     local textHeight = self.font:getHeight()
     local textY = self.y + (self.h - textHeight) / 2
     
+<<<<<<< HEAD
     love.graphics.printf(self.text, drawX, textY, self.w, "center")
+=======
+    love.graphics.printf(self.text, self.x, textY, self.w, "center")
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     love.graphics.pop()
     
     -- Descripción abajo si está seleccionado o hovered
     if (self.isHovered or self.isSelected) and self.description ~= "" then
         love.graphics.setFont(self.descFont)
+<<<<<<< HEAD
         love.graphics.setColor(0.7, 0.7, 0.7, self.hoverAlpha * drawAlpha)
         love.graphics.printf(self.description, 0, self.y + self.h + 8, 1280, "center")
+=======
+        love.graphics.setColor(0.7, 0.7, 0.7, self.hoverAlpha)
+        love.graphics.printf(self.description, 0, self.y + self.h + 5, 1280, "center")
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 

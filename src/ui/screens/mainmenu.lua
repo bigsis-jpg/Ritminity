@@ -5,7 +5,10 @@
 
 local StateManager = require("src.core.state")
 local Button = require("src.ui.core.button")
+<<<<<<< HEAD
 local AudioManager = require("src.managers.audio_manager")
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 
 local MainMenu = {}
 MainMenu.__index = MainMenu
@@ -14,7 +17,10 @@ function MainMenu:init()
     self.backgroundParticles = {}
     self.animationTime = 0
     self.selectedIndex = 1
+<<<<<<< HEAD
     self.menuMusic = nil
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     -- Inicializar partículas de fondo
     for i = 1, 50 do
@@ -40,7 +46,10 @@ function MainMenu:init()
     
     self.optionsData = {
         {id = "solo", label = "Un Jugador", description = "Jugar en solitario"},
+<<<<<<< HEAD
         {id = "profile", label = "Perfil", description = "Ver tus estadísticas y rango"},
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         {id = "multiplayer", label = "Multijugador", description = "Jugar en línea"},
         {id = "editor", label = "Editor", description = "Crear o editar mapas"},
         {id = "settings", label = "Opciones", description = "Configuración del juego"},
@@ -52,10 +61,13 @@ function MainMenu:init()
         local btn = Button:new(buttonX, y, buttonWidth, buttonHeight, opt.label, function()
             self:selectOption(opt.id)
         end, opt.description)
+<<<<<<< HEAD
         
         -- Staggered entry animation
         btn.entryProgress = -i * 0.15
         
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         table.insert(self.buttons, btn)
     end
 end
@@ -70,6 +82,7 @@ function MainMenu:enter(params)
         btn.isSelected = (i == self.selectedIndex)
         btn.isPressed = false
     end
+<<<<<<< HEAD
 
     -- Reproducir música del menú si hay archivos disponibles
     if not AudioManager:isMusicPlaying() then
@@ -82,6 +95,8 @@ function MainMenu:enter(params)
             end
         end
     end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 end
 
 function MainMenu:exit()
@@ -162,10 +177,15 @@ function MainMenu:handleInput(key)
         if self.selectedIndex > #self.buttons then
             self.selectedIndex = 1
         end
+<<<<<<< HEAD
     elseif key == "return" or key == "enter" or key == "kpenter" or key == "space" then
         self.buttons[self.selectedIndex]:click()
     elseif key == "escape" then
         love.event.quit()
+=======
+    elseif key == "return" or key == "enter" then
+        self.buttons[self.selectedIndex]:click()
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 
@@ -200,8 +220,11 @@ end
 function MainMenu:selectOption(optionId)
     if optionId == "solo" then
         StateManager:change("songselect")
+<<<<<<< HEAD
     elseif optionId == "profile" then
         StateManager:change("profile")
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     elseif optionId == "multiplayer" then
         StateManager:change("multiplayer")
     elseif optionId == "editor" then

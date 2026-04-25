@@ -91,6 +91,7 @@ function ChartParser:parseFile(path)
     return nil, "Parser no encontrado"
 end
 
+<<<<<<< HEAD
 -- Parsear formato osu!mania (.osu)
 function ChartParser:parseOsu(content, path)
     local chart = {
@@ -195,10 +196,53 @@ function ChartParser:parseOsu(content, path)
                     
                     table.insert(chart.notes, note)
                 end
+=======
+-- Parsear formato osu!mania
+function ChartParser:parseOsu(content, path)
+    local chart = {
+        format = "osu",
+        metadata = {},
+        difficulty = {},
+        notes = {}
+    }
+    
+    local currentSection = nil
+    local bpmChanges = {}
+    local timingPoints = {}
+    
+    -- Parsear línea por línea
+    for line in content:gmatch("[^\r\n]+") do
+        line = line:trim()
+        
+        if line == "" or line:sub(1, 1) == "#" then
+            -- Comentario o línea vacía
+        elseif line:sub(1, 1) == "[" then
+            currentSection = line:match("%[(.+)%]")
+        elseif currentSection == "General" then
+            local key, value = line:match("([^:]+):%s*(.+)")
+            if key and value then
+                chart.metadata[key:trim()] = value:trim()
+            end
+        elseif currentSection == "Difficulty" then
+            local key, value = line:match("([^:]+):%s*(.+)")
+            if key and value then
+                chart.difficulty[key:trim()] = tonumber(value) or value
+            end
+        elseif currentSection == "TimingPoints" then
+            local tp = self:parseOsuTimingPoint(line)
+            if tp then
+                table.insert(timingPoints, tp)
+            end
+        elseif currentSection == "HitObjects" then
+            local note = self:parseOsuHitObject(line)
+            if note then
+                table.insert(chart.notes, note)
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
             end
         end
     end
     
+<<<<<<< HEAD
     -- Extraer BPM real del primer timing point heredado
     for _, tp in ipairs(chart.timingPoints) do
         if tp.uninherited and tp.beatLength > 0 then
@@ -206,14 +250,93 @@ function ChartParser:parseOsu(content, path)
             break
         end
     end
+=======
+    -- Ordenar notas por tiempo
+    table.sort(chart.notes, function(a, b)
+        return a.time < b.time
+    end)
+    
+    chart.timingPoints = timingPoints
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     return chart
 end
 
+<<<<<<< HEAD
+=======
+-- Parsear timing point de osu!
+function ChartParser:parseOsuTimingPoint(line)
+    local parts = {}
+    for part in line:gmatch("([^,]+)") do
+        table.insert(parts, tonumber(part) or 0)
+    end
+    
+    if #parts >= 2 then
+        return {
+            time = parts[1] / 1000, -- Convertir a segundos
+            beatLength = parts[2],
+            meter = parts[3] or 4,
+            sampleSet = parts[4] or 0,
+            sampleIndex = parts[5] or 0,
+            volume = parts[6] or 100,
+            uninherited = parts[7] or 1,
+            effects = parts[8] or 0
+        }
+    end
+    
+    return nil
+end
+
+-- Parsear hit object de osu!
+function ChartParser:parseOsuHitObject(line)
+    local parts = {}
+    for part in line:gmatch("([^,]+)") do
+        table.insert(parts, part)
+    end
+    
+    if #parts >= 3 then
+        local x = tonumber(parts[1]) or 0
+        local y = tonumber(parts[2]) or 0
+        local time = (tonumber(parts[3]) or 0) / 1000
+        local type = tonumber(parts[4]) or 0
+        
+        -- Determinar columna basada en X (para osu!mania)
+        local columnCount = 4
+        local column = math.floor(x / 512 * columnCount) + 1
+        column = math.min(math.max(column, 1), columnCount)
+        
+        -- Determinar tipo de nota
+        local noteType = "tap"
+        if bit.band(type, 128) > 0 then
+            noteType = "hold"
+        end
+        
+        -- Extraer duración para hold notes (osu! format: x,y,time,type,hitSound,endTime:hitSample)
+        local holdTime = 0
+        if noteType == "hold" and parts[6] then
+            local holdEnd = tonumber(parts[6]:match("^(%d+)")) or 0
+            if holdEnd > 0 then
+                holdTime = (holdEnd - tonumber(parts[3])) / 1000
+            end
+        end
+        
+        return {
+            time = time,
+            column = column,
+            type = noteType,
+            holdTime = holdTime
+        }
+    end
+    
+    return nil
+end
+
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 -- Parsear formato StepMania (.sm)
 function ChartParser:parseSM(content, path)
     local chart = {
         format = "sm",
+<<<<<<< HEAD
         metadata = {
             title = "Unknown",
             artist = "Unknown",
@@ -302,10 +425,65 @@ function ChartParser:parseSMNoteData(data, notes, bpms, offset)
                 
                 currentBeat = currentBeat + (4 / subdivision)
             end
+=======
+        metadata = {},
+        notes = {}
+    }
+    
+    -- Extraer metadata
+    for key in content:gmatch("#([^:]+):") do
+        local value = content:match("#" .. key .. ":(.-);")
+        if value then
+            chart.metadata[key:lower()] = value:trim()
+        end
+    end
+    
+    -- Extraer notas
+    local tracks = {"tap", "hold", "lift", "fake"}
+    for _, track in ipairs(tracks) do
+        local trackNotes = content:match("#" .. track .. ".*:(.-);")
+        if trackNotes then
+            self:parseSMNotes(trackNotes, chart.notes, track)
+        end
+    end
+    
+    -- Ordenar notas
+    table.sort(chart.notes, function(a, b)
+        return a.time < b.time
+    end)
+    
+    return chart
+end
+
+-- Parsear notas de StepMania
+function ChartParser:parseSMNotes(trackNotes, notes, noteType)
+    -- Convertir a filas (beat)
+    local measure = 0
+    local beat = 0
+    
+    for measureStr in trackNotes:gmatch("(%d+)") do
+        local measureNum = tonumber(measureStr) or 0
+        -- Convertir medida a tiempo
+        local bpm = 120 -- BPM por defecto
+        local time = (measure * 4 + beat) * (60 / bpm)
+        
+        table.insert(notes, {
+            time = time,
+            column = beat % 4 + 1,
+            type = noteType,
+            holdTime = 0
+        })
+        
+        beat = beat + 1
+        if beat >= 4 then
+            beat = 0
+            measure = measure + 1
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         end
     end
 end
 
+<<<<<<< HEAD
 -- Convertir Beat a Tiempo absoluto (considerando cambios de BPM)
 function ChartParser:beatToTime(beat, bpms)
     local time = 0
@@ -328,6 +506,8 @@ function ChartParser:beatToTime(beat, bpms)
     return time
 end
 
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 -- Parsear formato BMS
 function ChartParser:parseBMS(content, path)
     local chart = {
@@ -454,11 +634,17 @@ function ChartParser:convertToInternal(chart, columnCount)
         notes = {},
         bpm = chart.metadata.bpm or 120,
         offset = chart.metadata.offset or 0,
+<<<<<<< HEAD
         audioFile = chart.metadata.audioFile or chart.metadata.AudioFilename or nil,
         title = chart.metadata.title or chart.metadata.Title or "Unknown",
         artist = chart.metadata.artist or chart.metadata.Artist or "Unknown",
         difficulty = chart.metadata.version or "Normal",
         columnCount = chart.difficulty and chart.difficulty.columnCount or 4
+=======
+        audioFile = chart.metadata.AudioFilename or chart.metadata.music or nil,
+        title = chart.metadata.Title or chart.metadata.title or "Unknown",
+        artist = chart.metadata.Artist or chart.metadata.artist or "Unknown"
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     }
     
     for _, note in ipairs(chart.notes) do
@@ -468,6 +654,7 @@ function ChartParser:convertToInternal(chart, columnCount)
         end
         
         table.insert(internal.notes, {
+<<<<<<< HEAD
             time = note.time,
             column = column,
             type = note.type,
@@ -482,6 +669,15 @@ function ChartParser:convertToInternal(chart, columnCount)
         return a.time < b.time
     end)
     
+=======
+            time = note.time + internal.offset,
+            column = column,
+            type = note.type,
+            holdTime = note.holdTime
+        })
+    end
+    
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     return internal
 end
 

@@ -6,7 +6,11 @@
 local StateManager = require("src.core.state")
 
 -- Usar pcall para manejar módulos opcionales
+<<<<<<< HEAD
 local json_ok, json = pcall(require, "src.utils.json")
+=======
+local json_ok, json = pcall(require, "json")
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 
 local Editor = {}
 Editor.__index = Editor
@@ -321,7 +325,11 @@ function Editor:saveChart()
     
     -- Intentar guardar el archivo
     local success, message = pcall(function()
+<<<<<<< HEAD
         local json = require("src.utils.json")
+=======
+        local json = require("json")
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         local jsonData = json.encode(chartData)
         love.filesystem.write(self.chartPath, jsonData)
     end)

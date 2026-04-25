@@ -38,8 +38,12 @@ Settings.options = {
         {id = "masterVolume", label = "Master Volume", type = "slider", value = 80, min = 0, max = 100},
         {id = "musicVolume", label = "Music Volume", type = "slider", value = 80, min = 0, max = 100},
         {id = "effectVolume", label = "Effect Volume", type = "slider", value = 100, min = 0, max = 100},
+<<<<<<< HEAD
         {id = "offset", label = "Audio Offset", type = "slider", value = 0, min = -200, max = 200},
         {id = "calibrate", label = "Run Calibration", type = "button", value = "START"}
+=======
+        {id = "offset", label = "Audio Offset", type = "slider", value = 0, min = -100, max = 100}
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     },
     input = {
         {id = "key1", label = "Column 1 Key", type = "key", value = "d"},
@@ -63,6 +67,7 @@ end
 function Settings:enter(params)
     self.currentCategory = 1
     self.currentIndex = 1
+<<<<<<< HEAD
     
     -- Sincronizar valores desde RITMINITY.settings
     for _, opt in ipairs(self.options.audio) do
@@ -78,6 +83,8 @@ function Settings:enter(params)
             if opt.id == "offset" then opt.value = RITMINITY.settings.globalOffset end
         end
     end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 end
 
 function Settings:exit()
@@ -172,10 +179,13 @@ function Settings:drawOptions()
         end
         
         love.graphics.setColor(0.5, 0.5, 0.5, 1)
+<<<<<<< HEAD
         if self.waitingForKey == option then
             valueStr = "PRESS A KEY..."
             love.graphics.setColor(1, 1, 0, 1)
         end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
         love.graphics.printf(valueStr, 200, y, 850, "right")
         
         -- Barra de slider
@@ -203,6 +213,7 @@ function Settings:onEscape()
 end
 
 function Settings:handleInput(key)
+<<<<<<< HEAD
     if self.waitingForKey then
         if key ~= "escape" then
             self.waitingForKey.value = key
@@ -216,6 +227,8 @@ function Settings:handleInput(key)
         return
     end
 
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     if key == "left" or key == "a" then
         self.currentCategory = self.currentCategory - 1
         if self.currentCategory < 1 then
@@ -242,10 +255,15 @@ function Settings:handleInput(key)
         if self.currentIndex > #options then
             self.currentIndex = 1
         end
+<<<<<<< HEAD
     elseif key == "return" or key == "enter" or key == "kpenter" or key == "space" then
         self:modifyOption()
     elseif key == "escape" then
         self:onEscape()
+=======
+    elseif key == "return" or key == "enter" then
+        self:modifyOption()
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 
@@ -256,12 +274,15 @@ function Settings:modifyOption()
     
     if option.type == "boolean" then
         option.value = not option.value
+<<<<<<< HEAD
     elseif option.type == "button" then
         if option.id == "calibrate" then
             StateManager:change("calibration")
         end
     elseif option.type == "key" then
         self.waitingForKey = option
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     elseif option.type == "select" then
         local currentIdx = 1
         for i, opt in ipairs(option.options) do
@@ -280,11 +301,14 @@ function Settings:modifyOption()
         if option.value > option.max then
             option.value = option.min
         end
+<<<<<<< HEAD
         
         -- Sincronizar offset global
         if option.id == "offset" then
             RITMINITY.settings.globalOffset = option.value
         end
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     end
 end
 

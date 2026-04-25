@@ -8,11 +8,14 @@
 -- Carga de configuración global
 local config = require("conf")
 
+<<<<<<< HEAD
 -- Extensiones de sistema
 function string:trim()
     return self:match("^%s*(.-)%s*$")
 end
 
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 -- Módulos del core
 local Logger = require("src.core.logger")
 local EventSystem = require("src.core.event")
@@ -33,19 +36,25 @@ local Settings = require("src.ui.screens.settings")
 local Multiplayer = require("src.ui.screens.multiplayer")
 local Login = require("src.ui.screens.auth.login")
 local Register = require("src.ui.screens.auth.register")
+<<<<<<< HEAD
 local Calibration = require("src.ui.screens.calibration")
 local Profile = require("src.ui.screens.profile")
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 
 -- Variables globales
 RITMINITY = {
     version = "1.0.0",
     running = true,
+<<<<<<< HEAD
     settings = {
         globalOffset = 0,
         scrollSpeed = 600,
         masterVolume = 80,
         keys = {"d", "f", "j", "k", "l", ";", "a"}
     },
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     paused = false,
     currentScreen = nil,
     profile = nil,
@@ -57,8 +66,12 @@ RITMINITY = {
         grade = "F",
         mods = {},
         time = 0
+<<<<<<< HEAD
     },
     config = config
+=======
+    }
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 }
 
 -- Logger global
@@ -94,9 +107,14 @@ function love.load(arg)
     StateManager:register("results", Results)
     StateManager:register("settings", Settings)
     StateManager:register("multiplayer", Multiplayer)
+<<<<<<< HEAD
     StateManager:register("auth.register", Register)
     StateManager:register("calibration", Calibration)
     StateManager:register("profile", Profile)
+=======
+    StateManager:register("auth.login", Login)
+    StateManager:register("auth.register", Register)
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     -- Estado inicial
     StateManager:change("mainmenu")
@@ -110,13 +128,22 @@ function love.update(dt)
     dt = math.min(dt, config.performance.maxDeltaTime)
     
     -- Actualizar managers (excepto Input, que debe ser al final)
+<<<<<<< HEAD
     InputManager:update(dt)
+=======
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     AudioManager:update(dt)
     NetworkManager:update(dt)
     ResourceManager:update(dt)
     
     -- Actualizar estado actual
+<<<<<<< HEAD
     StateManager:update(dt)
+=======
+    if StateManager.current then
+        StateManager.current:update(dt)
+    end
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     -- Procesar eventos
     EventSystem:update(dt)
@@ -131,7 +158,13 @@ function love.draw()
     love.graphics.clear(0.05, 0.05, 0.1, 1)
     
     -- Renderizar estado actual
+<<<<<<< HEAD
     StateManager:draw()
+=======
+    if StateManager.current then
+        StateManager.current:draw()
+    end
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
     
     -- UI overlay (FPS, etc)
     if config.debug.enabled and config.debug.showFPS then
@@ -145,12 +178,39 @@ end
 -- Manejo de eventos de teclado
 function love.keypressed(key, scancode, isRepeat)
     InputManager:handleKeyPressed(key, scancode, isRepeat)
+<<<<<<< HEAD
     StateManager:handleInput(key, scancode, isRepeat)
+=======
+    
+    if StateManager.current and StateManager.current.handleInput then
+        StateManager.current:handleInput(key, scancode, isRepeat)
+    end
+    
+    -- Atajos globales
+    if key == "escape" then
+        if StateManager.current and StateManager.current.onEscape then
+            StateManager.current:onEscape()
+        end
+    elseif key == "f11" then
+        love.window.setFullscreen(not love.window.getFullscreen())
+    elseif key == "f12" then
+        -- Captura de pantalla
+        local screenshot = love.graphics.newScreenshot()
+        screenshot:encode("ritminity_screenshot_" .. os.time() .. ".png")
+    end
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 end
 
 function love.keyreleased(key, scancode)
     InputManager:handleKeyReleased(key, scancode)
+<<<<<<< HEAD
     StateManager:keyreleased(key, scancode)
+=======
+    
+    if StateManager.current and StateManager.current.keyreleased then
+        StateManager.current:keyreleased(key, scancode)
+    end
+>>>>>>> fc9fba8c9d95bbf81299517e75bcc2e4260a8cb5
 end
 
 -- Manejo de eventos de mouse
